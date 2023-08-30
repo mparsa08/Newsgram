@@ -12,25 +12,23 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var themeData = Theme.of(context);
     var posts = AppDatabase.posts;
-    return Scaffold(
-      body: SafeArea(
-          child: SingleChildScrollView(
+    return SafeArea(
+      child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _AppBar(themeData: themeData),
+            CustomAppBar(themeData: themeData, title: 'Profile'),
             _ProfileOverview(themeData: themeData),
             _PostsList(themeData: themeData, posts: posts)
           ],
         ),
-      )),
+      ),
     );
   }
 }
 
 class _ProfileOverview extends StatelessWidget {
   const _ProfileOverview({
-    super.key,
     required this.themeData,
   });
 
@@ -146,11 +144,13 @@ class _ProfileOverview extends StatelessWidget {
   }
 }
 
-class _AppBar extends StatelessWidget {
-  const _AppBar({
+class CustomAppBar extends StatelessWidget {
+  const CustomAppBar({
     super.key,
     required this.themeData,
+    required this.title,
   });
+  final String title;
 
   final ThemeData themeData;
 
@@ -162,7 +162,7 @@ class _AppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Profile',
+            title,
             style: themeData.textTheme.headlineMedium,
           ),
           IconButton(

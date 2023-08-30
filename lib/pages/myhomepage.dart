@@ -1,3 +1,5 @@
+import 'package:chat_app/pages/articlescreen.dart';
+import 'package:chat_app/pages/profilescreen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,13 +8,21 @@ import 'package:get/get.dart';
 import '../data.dart';
 import '../gen/assets.gen.dart';
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({super.key});
+class MainPage extends StatelessWidget {
+  MainPage({super.key});
   final stories = AppDatabase.stories;
+  final _selectedNavBarItem = 0.obs;
 
   @override
   Widget build(BuildContext context) {
     final themeContext = Theme.of(context);
+    final List<Widget> currentWidget = <Widget>[
+      HomePage(themeContext: themeContext, stories: stories),
+      const ArticleScreen(),
+      const ProfileScreen(),
+      Container(color: Colors.blue),
+      Container(color: Colors.blue),
+    ];
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Stack(
@@ -45,70 +55,29 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: _BottomNavBar(),
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Hi, Parsa!',
-                    style: themeContext.textTheme.titleMedium,
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Assets.img.icons.notification.image(
-                      width: 30,
-                      height: 30,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
-              child: Row(
-                children: [
-                  Text(
-                    'Explore today\'s',
-                    style: themeContext.textTheme.headlineMedium,
-                  )
-                ],
-              ),
-            ),
-            _StoryList(stories: stories, themeContext: themeContext),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-              child: _CategoryList(),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
-              child: _PostList(),
-            )
-          ],
-        ),
-      )),
+      bottomNavigationBar:
+          _BottomNavBar(selectedNavBarItem: _selectedNavBarItem),
+      body: Obx(() => currentWidget.elementAt(_selectedNavBarItem.value)),
     );
   }
 }
 
 class _BottomNavBar extends StatelessWidget {
-  _BottomNavBar({
-    Key? key,
-  }) : super(key: key);
+  const _BottomNavBar({
+    super.key,
+    required RxInt selectedNavBarItem,
+  }) : _selectedNavBarItem = selectedNavBarItem;
 
-  final _selectedNavBarItem = 0.obs;
+  final RxInt _selectedNavBarItem;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(color: Color(0xaa0D253C), blurRadius: 20),
+          BoxShadow(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              blurRadius: 20),
         ],
       ),
       child: Obx(
@@ -134,7 +103,6 @@ class _BottomNavBar extends StatelessWidget {
                     height: 24,
                   ),
                   label: 'Articles'),
-              const BottomNavigationBarItem(icon: SizedBox(), label: ''),
               BottomNavigationBarItem(
                   icon: Image.asset(
                     Assets.img.icons.search.path,
@@ -152,6 +120,67 @@ class _BottomNavBar extends StatelessWidget {
             ]),
       ),
     );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({
+    super.key,
+    required this.themeContext,
+    required this.stories,
+  });
+
+  final ThemeData themeContext;
+  final List<StoryData> stories;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+        child: SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Hi, Parsa!',
+                  style: themeContext.textTheme.titleMedium,
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: Assets.img.icons.notification.image(
+                    width: 30,
+                    height: 30,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+            child: Row(
+              children: [
+                Text(
+                  'Explore today\'s',
+                  style: themeContext.textTheme.headlineMedium,
+                )
+              ],
+            ),
+          ),
+          _StoryList(stories: stories, themeContext: themeContext),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+            child: _CategoryList(),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+            child: _PostList(),
+          )
+        ],
+      ),
+    ));
   }
 }
 

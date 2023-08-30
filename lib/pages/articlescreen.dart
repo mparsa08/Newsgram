@@ -1,5 +1,6 @@
 import 'package:chat_app/data.dart';
 import 'package:chat_app/gen/assets.gen.dart';
+import 'package:chat_app/pages/profilescreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -33,21 +34,7 @@ class ArticleScreen extends StatelessWidget {
             SingleChildScrollView(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: const Icon(CupertinoIcons.left_chevron)),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(CupertinoIcons.ellipsis),
-                        ),
-                      ],
-                    ),
-                  ),
+                  CustomAppBar(themeData: themeData, title: 'Articles'),
                   const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),

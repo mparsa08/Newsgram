@@ -1,5 +1,4 @@
-import 'package:chat_app/pages/articlescreen.dart';
-import 'package:chat_app/pages/profilescreen.dart';
+import 'package:chat_app/pages/myhomepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -108,7 +107,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const ProfileScreen()
+        home: MainPage()
         // SplashScreen(),
         );
   }
