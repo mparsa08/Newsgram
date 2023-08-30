@@ -412,7 +412,7 @@ class _PostList extends StatelessWidget {
           shrinkWrap: true,
           itemBuilder: (context, index) {
             var post = _posts[index];
-            return _Posts(post: post);
+            return Posts(post: post);
           },
         )
       ],
@@ -420,8 +420,8 @@ class _PostList extends StatelessWidget {
   }
 }
 
-class _Posts extends StatelessWidget {
-  const _Posts({
+class Posts extends StatelessWidget {
+  const Posts({
     Key? key,
     required this.post,
   }) : super(key: key);
@@ -435,8 +435,10 @@ class _Posts extends StatelessWidget {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           color: Colors.white,
-          boxShadow: const [
-            BoxShadow(blurRadius: 20, color: Color(0xff0D253C))
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 20,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2))
           ]),
       child: Row(
         children: [
@@ -453,7 +455,9 @@ class _Posts extends StatelessWidget {
                 children: [
                   Text(
                     post.caption,
-                    style: Theme.of(context).textTheme.headlineLarge,
+                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                   Text(
                     post.title,
@@ -466,7 +470,11 @@ class _Posts extends StatelessWidget {
                       Icon(
                         CupertinoIcons.hand_thumbsup,
                         size: 18,
-                        color: Theme.of(context).textTheme.bodyMedium!.color,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .color!
+                            .withOpacity(0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -480,7 +488,11 @@ class _Posts extends StatelessWidget {
                       Icon(
                         CupertinoIcons.clock,
                         size: 18,
-                        color: Theme.of(context).textTheme.bodyMedium!.color,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .color!
+                            .withOpacity(0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -509,7 +521,8 @@ class _Posts extends StatelessWidget {
                                     color: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
-                                        .color,
+                                        .color!
+                                        .withOpacity(0.6),
                                   ),
                           ],
                         ),
