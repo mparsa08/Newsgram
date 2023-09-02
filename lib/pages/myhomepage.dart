@@ -1,5 +1,6 @@
 import 'package:chat_app/pages/articlescreen.dart';
 import 'package:chat_app/pages/profilescreen.dart';
+import 'package:chat_app/pages/searchscreen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,65 +11,128 @@ import '../gen/assets.gen.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({super.key});
-  final stories = AppDatabase.stories;
+
   final _selectedNavBarItem = 0.obs;
+  final List _navbarHistory = [];
+
+  final GlobalKey<NavigatorState> homePageNavKey = GlobalKey();
+  final GlobalKey<NavigatorState> articlePageNavKey = GlobalKey();
+  final GlobalKey<NavigatorState> searchPageNavKey = GlobalKey();
+  final GlobalKey<NavigatorState> profilePageNavKey = GlobalKey();
+
+  late final navmap = {
+    0: homePageNavKey,
+    1: articlePageNavKey,
+    2: searchPageNavKey,
+    3: profilePageNavKey
+  };
+  Future<bool> _onWillPop() async {
+    final NavigatorState currentSelectedNavigationstate =
+        navmap[_selectedNavBarItem]!.currentState!;
+
+    if (currentSelectedNavigationstate.canPop()) {
+      currentSelectedNavigationstate.pop();
+      return false;
+    } else if (_navbarHistory.isNotEmpty) {
+      _selectedNavBarItem.value = _navbarHistory.last;
+      _navbarHistory.removeLast();
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final themeContext = Theme.of(context);
-    final List<Widget> currentWidget = <Widget>[
-      HomePage(themeContext: themeContext, stories: stories),
-      const ArticleScreen(),
-      const ProfileScreen(),
-      Container(color: Colors.blue),
-      Container(color: Colors.blue),
-    ];
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Stack(
-        children: [
-          Positioned.fill(
-            bottom: 30,
-            top: 5,
-            right: 4,
-            left: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                boxShadow: const [
-                  BoxShadow(color: Color(0xaa0D253C), blurRadius: 20)
-                ],
+    return WillPopScope(
+      onWillPop: () => _onWillPop(),
+      child: Scaffold(
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: Stack(
+            children: [
+              Positioned.fill(
+                bottom: 30,
+                top: 5,
+                right: 4,
+                left: 4,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    boxShadow: const [
+                      BoxShadow(color: Color(0xaa0D253C), blurRadius: 20)
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          FloatingActionButton(
-            elevation: 0,
-            shape: const CircleBorder(
-              side: BorderSide(
-                strokeAlign: 0,
-                color: Colors.white,
-                width: 5,
+              FloatingActionButton(
+                elevation: 0,
+                shape: const CircleBorder(
+                  side: BorderSide(
+                    strokeAlign: 0,
+                    color: Colors.white,
+                    width: 5,
+                  ),
+                ),
+                onPressed: () {},
+                child: const Icon(Icons.add),
               ),
-            ),
-            onPressed: () {},
-            child: const Icon(Icons.add),
+            ],
           ),
-        ],
-      ),
-      bottomNavigationBar:
-          _BottomNavBar(selectedNavBarItem: _selectedNavBarItem),
-      body: Obx(() => currentWidget.elementAt(_selectedNavBarItem.value)),
+          bottomNavigationBar: _BottomNavBar(
+            selectedNavBarItem: _selectedNavBarItem,
+            navbarHistory: _navbarHistory,
+          ),
+          body: Obx(
+            () => IndexedStack(
+              index: _selectedNavBarItem.value,
+              children: [
+                _customNavigator(
+                    key: homePageNavKey, tabIndex: 0, child: const HomePage()),
+                _customNavigator(
+                    key: articlePageNavKey,
+                    tabIndex: 1,
+                    child: const ArticleScreen()),
+                _customNavigator(
+                    key: searchPageNavKey,
+                    tabIndex: 2,
+                    child: const SearchScreen(tabName: 'Search')),
+                _customNavigator(
+                    key: profilePageNavKey,
+                    tabIndex: 3,
+                    child: const ProfileScreen()),
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget _customNavigator(
+      {required GlobalKey key, required int tabIndex, required Widget child}) {
+    return Navigator(
+      key: key,
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) {
+            return Offstage(
+              offstage: _selectedNavBarItem.value != tabIndex,
+              child: child,
+            );
+          },
+        );
+      },
     );
   }
 }
 
 class _BottomNavBar extends StatelessWidget {
   const _BottomNavBar({
-    super.key,
     required RxInt selectedNavBarItem,
-  }) : _selectedNavBarItem = selectedNavBarItem;
+    required navbarHistory,
+  })  : _selectedNavBarItem = selectedNavBarItem,
+        _navbarHistory = navbarHistory;
 
   final RxInt _selectedNavBarItem;
+  final List _navbarHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +149,8 @@ class _BottomNavBar extends StatelessWidget {
             type: BottomNavigationBarType.fixed,
             currentIndex: _selectedNavBarItem.value,
             onTap: (value) {
+              _navbarHistory.remove(_selectedNavBarItem.value);
+              _navbarHistory.add(_selectedNavBarItem.value);
               _selectedNavBarItem.value = value;
             },
             items: [
@@ -126,61 +192,62 @@ class _BottomNavBar extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({
     super.key,
-    required this.themeContext,
-    required this.stories,
   });
-
-  final ThemeData themeContext;
-  final List<StoryData> stories;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final stories = AppDatabase.stories;
+    final themeContext = Theme.of(context);
+    return Scaffold(
+      body: SafeArea(
         child: SingleChildScrollView(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Hi, Parsa!',
-                  style: themeContext.textTheme.titleMedium,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Hi, Parsa!',
+                      style: themeContext.textTheme.titleMedium,
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: Assets.img.icons.notification.image(
+                        width: 30,
+                        height: 30,
+                      ),
+                    )
+                  ],
                 ),
-                InkWell(
-                  onTap: () {},
-                  child: Assets.img.icons.notification.image(
-                    width: 30,
-                    height: 30,
-                  ),
-                )
-              ],
-            ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
+                child: Row(
+                  children: [
+                    Text(
+                      'Explore today\'s',
+                      style: themeContext.textTheme.headlineMedium,
+                    )
+                  ],
+                ),
+              ),
+              _StoryList(stories: stories, themeContext: themeContext),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
+                child: _CategoryList(),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                child: _PostList(),
+              )
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 4),
-            child: Row(
-              children: [
-                Text(
-                  'Explore today\'s',
-                  style: themeContext.textTheme.headlineMedium,
-                )
-              ],
-            ),
-          ),
-          _StoryList(stories: stories, themeContext: themeContext),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
-            child: _CategoryList(),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
-            child: _PostList(),
-          )
-        ],
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -459,110 +526,132 @@ class Posts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                blurRadius: 20,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2))
-          ]),
-      child: Row(
-        children: [
-          ClipRRect(
+    return InkWell(
+      onTap: () {
+        if (post.id == 0) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) {
+              return const ArticleScreen();
+            },
+          ));
+        } else if (post.id == 1) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) {
+              return const SearchScreen(tabName: 'Home');
+            },
+          ));
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset('assets/img/posts/small/${post.imageFileName}'),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    post.caption,
-                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary),
-                  ),
-                  Text(
-                    post.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        CupertinoIcons.hand_thumbsup,
-                        size: 18,
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .color!
-                            .withOpacity(0.6),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        post.likes,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(fontSize: 12),
-                      ),
-                      const SizedBox(width: 16),
-                      Icon(
-                        CupertinoIcons.clock,
-                        size: 18,
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .color!
-                            .withOpacity(0.6),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        post.time,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(fontSize: 12),
-                      ),
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            post.isBookmarked
-                                ? Icon(
-                                    CupertinoIcons.bookmark_fill,
-                                    size: 18,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .color,
-                                  )
-                                : Icon(
-                                    CupertinoIcons.bookmark,
-                                    size: 18,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .color!
-                                        .withOpacity(0.6),
-                                  ),
-                          ],
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  blurRadius: 20,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.2))
+            ]),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child:
+                  Image.asset('assets/img/posts/small/${post.imageFileName}'),
             ),
-          )
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      post.caption,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineLarge!
+                          .copyWith(
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.primary),
+                    ),
+                    Text(
+                      post.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          CupertinoIcons.hand_thumbsup,
+                          size: 18,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .color!
+                              .withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          post.likes,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(fontSize: 12),
+                        ),
+                        const SizedBox(width: 16),
+                        Icon(
+                          CupertinoIcons.clock,
+                          size: 18,
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .color!
+                              .withOpacity(0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          post.time,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(fontSize: 12),
+                        ),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              post.isBookmarked
+                                  ? Icon(
+                                      CupertinoIcons.bookmark_fill,
+                                      size: 18,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .color,
+                                    )
+                                  : Icon(
+                                      CupertinoIcons.bookmark,
+                                      size: 18,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .color!
+                                          .withOpacity(0.6),
+                                    ),
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

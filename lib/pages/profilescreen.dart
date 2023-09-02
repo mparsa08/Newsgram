@@ -12,6 +12,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var themeData = Theme.of(context);
     var posts = AppDatabase.posts;
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(

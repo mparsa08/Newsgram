@@ -1,6 +1,5 @@
 import 'package:chat_app/data.dart';
 import 'package:chat_app/gen/assets.gen.dart';
-import 'package:chat_app/pages/profilescreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +10,7 @@ class ArticleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var article = AppDatabase.posts[0];
     var themeData = Theme.of(context);
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {},
@@ -28,14 +28,28 @@ class ArticleScreen extends StatelessWidget {
               ),
             ],
           )),
-      body: SafeArea(
-        child: Stack(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              titleSpacing: 32,
+              title: Text(
+                'Article',
+                style: themeData.textTheme.headlineMedium,
+              ),
+              actions: [
+                IconButton(
+                    onPressed: () {},
+                    icon: const Icon(CupertinoIcons.ellipsis)),
+              ],
+            ),
+          ];
+        },
+        body: Stack(
           children: [
             SingleChildScrollView(
               child: Column(
                 children: [
-                  CustomAppBar(themeData: themeData, title: 'Articles'),
-                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Text(
@@ -110,14 +124,14 @@ class ArticleScreen extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(32, 0, 32, 16),
                     child: Text(
                       '''1. Put yourself first. By putting yourself first and not ignoring your needs, you can better help others and your family. 
-        
-        2. Love yourself first. In order to get stronger and be able to love your family and friends, you must first love yourself. Find peace within yourself to love and accept who you are.  
-        
-        3. Teach people how to respect and treat you. Women often overlook this, but you can teach people how to respect you by your own actions and attitudes toward yourself.
-        
-        4. Understand your worth and value. It is important to be confident in your love for yourself as you are worthy and fabulous. Be your authentic self and don’t worry what others think of you. 
-        
-        5. Prioritize your professional development. If you are a woman who constantly strives for greatness, make sure to invest in your professional development. No matter where you might be in your career, there is always room for improvement. Treat career development as part of your daily life. Learning, growing and expanding your skills everyday can build your confidence. ''',
+          
+          2. Love yourself first. In order to get stronger and be able to love your family and friends, you must first love yourself. Find peace within yourself to love and accept who you are.  
+          
+          3. Teach people how to respect and treat you. Women often overlook this, but you can teach people how to respect you by your own actions and attitudes toward yourself.
+          
+          4. Understand your worth and value. It is important to be confident in your love for yourself as you are worthy and fabulous. Be your authentic self and don’t worry what others think of you. 
+          
+          5. Prioritize your professional development. If you are a woman who constantly strives for greatness, make sure to invest in your professional development. No matter where you might be in your career, there is always room for improvement. Treat career development as part of your daily life. Learning, growing and expanding your skills everyday can build your confidence. ''',
                       style: themeData.textTheme.bodyLarge,
                     ),
                   )
