@@ -65,6 +65,7 @@ class MainPage extends StatelessWidget {
                 ),
               ),
               FloatingActionButton(
+                heroTag: 'uniqueTag2',
                 elevation: 0,
                 shape: const CircleBorder(
                   side: BorderSide(

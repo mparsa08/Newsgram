@@ -1,4 +1,5 @@
 import 'package:chat_app/gen/assets.gen.dart';
+import 'package:chat_app/pages/myhomepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -120,7 +121,7 @@ class _SignUp extends StatelessWidget {
         Row(
           children: [
             Text(
-              "Welcome to BlogClub!",
+              "Welcome to Newsgram!",
               style: themeData.textTheme.headlineMedium,
             ),
           ],
@@ -168,7 +169,9 @@ class _SignUp extends StatelessWidget {
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(MainPage());
+                },
                 child: Text(
                   'SIGN UP',
                   style: themeData.textTheme.titleMedium!
@@ -251,7 +254,9 @@ class _Login extends StatelessWidget {
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.off(() => MainPage());
+                },
                 child: Text(
                   'LOGIN',
                   style: themeData.textTheme.titleMedium!

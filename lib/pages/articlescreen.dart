@@ -13,6 +13,7 @@ class ArticleScreen extends StatelessWidget {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'uniqueTag1',
           onPressed: () {},
           label: Row(
             crossAxisAlignment: CrossAxisAlignment.end,

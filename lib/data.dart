@@ -145,15 +145,15 @@ class AppDatabase {
 
   static List<OnBoardingItem> get onBoardingItem {
     return [
-      OnBoardingItem("Welcome to BlogClub: Your Tech, News, and Chat Hub",
-          "Step into the vibrant realm of BlogClub! Immerse yourself in the latest technology updates, breaking news stories, and engaging conversations. Connect with fellow enthusiasts, share insights, and stay informed while enjoying seamless chatting. Your all-in-one destination for tech, news, and connection."),
-      OnBoardingItem("BlogClub Unleashed: Explore, Engage, Evolve",
-          "Unleash the power of knowledge with BlogClub! Embark on a journey through the world of technology and news. Stay updated with cutting-edge trends, stay informed with breaking news, and participate in dynamic discussions. Join us to elevate your tech, news, and chatting experience."),
-      OnBoardingItem("Join the BlogClub Revolution: Tech, News, Chat",
-          "Revolutionize your tech, news, and chatting experience with BlogClub! Dive into a space where technology meets news and meaningful conversations. Discover the latest innovations, catch up on global events, and connect with a community of like-minded individuals. The BlogClub revolution starts here."),
+      OnBoardingItem("Welcome to Newsgram: Your Tech, News, and Chat Hub",
+          "Step into the vibrant realm of Newsgram! Immerse yourself in the latest technology updates, breaking news stories, and engaging conversations. Connect with fellow enthusiasts, share insights, and stay informed while enjoying seamless chatting. Your all-in-one destination for tech, news, and connection."),
+      OnBoardingItem("Newsgram Unleashed: Explore, Engage, Evolve",
+          "Unleash the power of knowledge with Newsgram! Embark on a journey through the world of technology and news. Stay updated with cutting-edge trends, stay informed with breaking news, and participate in dynamic discussions. Join us to elevate your tech, news, and chatting experience."),
+      OnBoardingItem("Join the Newsgram Revolution: Tech, News, Chat",
+          "Revolutionize your tech, news, and chatting experience with Newsgram! Dive into a space where technology meets news and meaningful conversations. Discover the latest innovations, catch up on global events, and connect with a community of like-minded individuals. The Newsgram revolution starts here."),
       OnBoardingItem(
-          "BlogClub Connect: Where Tech Enthusiasts Meet News Explorers",
-          "Welcome to BlogClub Connect, where passions for tech, news, and connection converge. Immerse yourself in a world of tech innovations and breaking stories. Engage in insightful conversations, share your perspectives, and forge valuable connections. Join us in shaping the dialogue of technology and news."),
+          "Newsgram Connect: Where Tech Enthusiasts Meet News Explorers",
+          "Welcome to Newsgram Connect, where passions for tech, news, and connection converge. Immerse yourself in a world of tech innovations and breaking stories. Engage in insightful conversations, share your perspectives, and forge valuable connections. Join us in shaping the dialogue of technology and news."),
     ];
   }
 }
