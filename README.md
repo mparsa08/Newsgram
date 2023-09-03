@@ -1,3 +1,5 @@
+[![LOGO.png](https://i.postimg.cc/j2QNdvMS/LOGO.png)](https://postimg.cc/8fcsZd82)
+
 # Newsgram
 
 NewsGram: Your News, Your Way
